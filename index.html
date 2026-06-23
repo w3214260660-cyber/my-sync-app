@@ -3,170 +3,292 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotton Studio - Customer Management</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Cotton Studio - Master ERP Cloud System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            background-color: #f4f6f9;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            padding-top: 30px;
-        }
-        .main-card {
-            border: none;
-            border-radius: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-        }
-        .table-responsive {
-            background: white;
-            border-radius: 12px;
-            padding: 15px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', 'Noto Nastaliq Urdu', sans-serif; }
     </style>
 </head>
-<body>
+<body class="bg-gray-50 text-gray-800 min-h-screen flex flex-col">
 
-<div class="container">
-    <div class="row mb-4 text-center">
-        <div class="col">
-            <h2 class="fw-bold text-primary">Cotton Studio Cloud ERP</h2>
-            <p class="text-muted">کسٹمر مینجمنٹ سسٹم (MongoDB Cloud)</p>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card main-card p-4">
-                <h4 class="mb-3 text-secondary fw-bold">نیا کسٹمر ایڈ کریں</h4>
-                <form id="customer-form">
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">کسٹمر کا نام *</label>
-                        <input type="text" id="customer-name" class="form-content form-control" required placeholder="نام لکھیں...">
+    <nav class="bg-indigo-900 text-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16 items-center">
+                <div class="flex items-center space-x-reverse space-x-3">
+                    <div class="p-2 bg-indigo-700 rounded-lg">
+                        <i class="fas fa-layer-group text-xl text-indigo-200"></i>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">فون نمبر</label>
-                        <input type="text" id="customer-phone" class="form-control" placeholder="03001234567">
+                    <div>
+                        <span class="text-xl font-bold tracking-wide block">COTTON STUDIO</span>
+                        <span class="text-xs text-indigo-300 block -mt-1">ماسٹر کلاؤڈ ERP سسٹم</span>
                     </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">ایڈریس / پتہ</label>
-                        <input type="text" id="customer-address" class="form-control" placeholder="شہر یا مارکیٹ کا نام...">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">ابتدائی بیلنس (Rs.)</label>
-                        <input type="number" id="customer-balance" class="form-control" value="0" min="0">
-                    </div>
-                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">💾 کلاؤڈ پر سیو کریں</button>
-                </form>
-            </div>
-        </div>
-
-        <div class="col-md-8">
-            <div class="card main-card p-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h4 class="text-secondary fw-bold m-0">تمام کسٹمرز کی لسٹ</h4>
-                    <button onclick="loadCustomers()" class="btn btn-outline-secondary btn-sm">🔄 لسٹ ریفریش کریں</button>
                 </div>
-                
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle">
-                        <thead class="table-light">
-                            <tr>
-                                <th>نام</th>
-                                <th>فون نمبر</th>
-                                <th>ایڈریس</th>
-                                <th>بیلنس (Rs.)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="customer-list">
-                            <tr>
-                                <td colspan="4" class="text-center text-muted">کسٹمرز لوڈ ہو رہے ہیں...</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div class="flex space-x-reverse space-x-2">
+                    <button onclick="switchTab('dashboard')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium bg-indigo-800 text-white transition"><i class="fas fa-chart-pie ml-2"></i>ڈیش بورڈ</button>
+                    <button onclick="switchTab('customers')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-indigo-200 hover:bg-indigo-800 hover:text-white transition"><i class="fas fa-users ml-2"></i>کسٹمر کھاتہ</button>
+                    <button onclick="switchTab('suppliers')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-indigo-200 hover:bg-indigo-800 hover:text-white transition"><i class="fas fa-truck-loading ml-2"></i>سپلائرز</button>
+                    <button onclick="switchTab('sales')" class="nav-btn px-4 py-2 rounded-lg text-sm font-medium text-indigo-200 hover:bg-indigo-800 hover:text-white transition"><i class="fas fa-shopping-cart ml-2"></i>سیلز انوائس</button>
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </nav>
 
-<script>
-    // پیج لوڈ ہوتے ہی کسٹمرز کلاؤڈ سے لے کر آؤ
-    document.addEventListener("DOMContentLoaded", loadCustomers);
-    
-    // فارم سبمٹ ہونے پر کسٹمر ایڈ کرو
-    document.getElementById('customer-form').addEventListener('submit', addCustomer);
-
-    // 1. کلاؤڈ ڈیٹا بیس سے کسٹمرز لوڈ کرنے کا فنکشن
-    async function loadCustomers() {
-        const listContainer = document.getElementById('customer-list');
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        try {
-            const response = await fetch('/api/customers');
-            if (!response.ok) throw new Error('Network response was not ok');
+        <div id="tab-dashboard" class="tab-content space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">کل کسٹمرز رسیو ایبل</p>
+                        <h3 id="dash-cust-receivable" class="text-2xl font-bold text-emerald-600 mt-1">Rs. 0</h3>
+                    </div>
+                    <div class="p-4 bg-emerald-50 text-emerald-600 rounded-xl"><i class="fas fa-wallet text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">کل سپلائرز پے ایبل</p>
+                        <h3 id="dash-supp-payable" class="text-2xl font-bold text-rose-600 mt-1">Rs. 0</h3>
+                    </div>
+                    <div class="p-4 bg-rose-50 text-rose-600 rounded-xl"><i class="fas fa-hand-holding-usd text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">آج کی کل سیلز</p>
+                        <h3 class="text-2xl font-bold text-indigo-600 mt-1">Rs. 0</h3>
+                    </div>
+                    <div class="p-4 bg-indigo-50 text-indigo-600 rounded-xl"><i class="fas fa-cash-register text-2xl"></i></div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex items-center justify-between">
+                    <div>
+                        <p class="text-sm text-gray-500 font-medium">ٹوٹل کسٹمرز رجسٹرڈ</p>
+                        <h3 id="dash-total-customers" class="text-2xl font-bold text-gray-800 mt-1">0</h3>
+                    </div>
+                    <div class="p-4 bg-gray-50 text-gray-600 rounded-xl"><i class="fas fa-users text-2xl"></i></div>
+                </div>
+            </div>
             
-            const customers = await response.json();
-            listContainer.innerHTML = ''; 
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-bolt text-amber-500 ml-2"></i>کوئیک ایکشنز</h3>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <button onclick="switchTab('customers')" class="p-4 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-center font-medium transition"><i class="fas fa-user-plus block text-2xl mb-2 text-indigo-600"></i>نیا کسٹمر</button>
+                        <button onclick="switchTab('suppliers')" class="p-4 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-center font-medium transition"><i class="fas fa-truck block text-2xl mb-2 text-purple-600"></i>نیا سپلائر</button>
+                        <button onclick="switchTab('sales')" class="p-4 bg-pink-50 hover:bg-pink-100 text-pink-700 rounded-xl text-center font-medium transition"><i class="fas fa-file-invoice block text-2xl mb-2 text-pink-600"></i>نیو انوائس</button>
+                        <button onclick="loadCustomers()" class="p-4 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-center font-medium transition"><i class="fas fa-sync block text-2xl mb-2 text-amber-600"></i>ڈیٹا سنک</button>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-circle-check text-emerald-500 ml-2"></i>سسٹم اسٹیٹس</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <span class="text-sm font-medium text-gray-600">مونو جی ڈی بی کلاؤڈ</span>
+                            <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800"><i class="fas fa-link ml-1"></i>کنیکٹڈ</span>
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                            <span class="text-sm font-medium text-gray-600">رینڈر کلاؤڈ سرور</span>
+                            <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800"><i class="fas fa-server ml-1"></i>آن لائن</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-            if(customers.length === 0) {
-                listContainer.innerHTML = `<tr><td colspan="4" class="text-center text-muted">کوئی کسٹمر موجود نہیں ہے!</td></tr>`;
+        <div id="tab-customers" class="tab-content hidden space-y-6">
+            <div class="flex flex-col lg:flex-row gap-6">
+                <div class="w-full lg:w-1/3 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit">
+                    <h3 class="text-lg font-bold text-gray-800 mb-4"><i class="fas fa-user-plus text-indigo-600 ml-2"></i>نیا کسٹمر اکاؤنٹ بنائیں</h3>
+                    <form id="customer-form" class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">کسٹمر کا نام *</label>
+                            <input type="text" id="customer-name" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition outline-none" required placeholder="مثال: وقاص کلیکشن">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">موبائل نمبر</label>
+                            <input type="text" id="customer-phone" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition outline-none" placeholder="03001234567">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">مارکیٹ / پتہ</label>
+                            <input type="text" id="customer-address" class="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition outline-none" placeholder="مثال: اعظم کلاتھ مارکیٹ، لاہور">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-1">ابتدائی بیلنس (رسیو ایبل)</label>
+                            <div class="relative">
+                                <span class="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 font-medium text-sm">Rs.</span>
+                                <input type="number" id="customer-balance" class="w-full pl-4 pr-10 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition outline-none" value="0" min="0">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl shadow-md shadow-indigo-100 transition flex items-center justify-center"><i class="fas fa-save ml-2"></i>کلاؤڈ پر سیو کریں</button>
+                    </form>
+                </div>
+
+                <div class="flex-grow bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+                        <h3 class="text-lg font-bold text-gray-800"><i class="fas fa-list text-indigo-600 ml-2"></i>کسٹمرز لیجر لسٹ</h3>
+                        <div class="w-full sm:w-auto flex space-x-reverse space-x-2">
+                            <input type="text" id="customer-search" oninput="searchCustomer()" class="px-4 py-2 text-sm border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500" placeholder="نام سے سرچ کریں...">
+                            <button onclick="loadCustomers()" class="p-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-gray-600 transition"><i class="fas fa-sync"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-gray-100">
+                        <table class="w-full text-right border-collapse">
+                            <thead>
+                                <tr class="bg-gray-50 border-b border-gray-100 text-gray-600 text-sm font-semibold">
+                                    <th class="p-4">کسٹمر کا نام</th>
+                                    <th class="p-4">موبائل نمبر</th>
+                                    <th class="p-4">ایڈریس / پتہ</th>
+                                    <th class="p-4">کرنٹ بیلنس (Rs.)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="customer-list-body" class="divide-y divide-gray-50 text-sm">
+                                <tr>
+                                    <td colspan="4" class="p-8 text-center text-gray-400"><i class="fas fa-spinner fa-spin ml-2"></i>ڈیٹا کلاؤڈ سے لوڈ ہو رہا ہے...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tab-suppliers" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center py-12">
+                <div class="p-4 bg-purple-50 text-purple-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4"><i class="fas fa-truck text-2xl"></i></div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">سپلائر ماڈیول کلاؤڈ ریڈی ہے</h3>
+                <p class="text-gray-500 max-w-md mx-auto mb-4">یہ سیکشن بھی کسٹمرز کی طرح مونو جی ڈی بی کلاؤڈ ڈیٹا بیس کے ساتھ اٹیچ ہونے کے لیے تیار ہے۔</p>
+            </div>
+        </div>
+
+        <div id="tab-sales" class="tab-content hidden space-y-6">
+            <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 text-center py-12">
+                <div class="p-4 bg-pink-50 text-pink-600 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4"><i class="fas fa-file-invoice text-2xl"></i></div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">ڈیجیٹل سیلز انوائس جنریٹر</h3>
+                <p class="text-gray-500 max-w-md mx-auto mb-4">یہاں سے کٹائی، بنائی اور تھان کی ڈیجیٹل انوائس براہ راست کلاؤڈ پر محفوظ ہو کر پی ڈی ایف جنریٹ کرے گی۔</p>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-white border-t border-gray-100 py-4 text-center text-xs text-gray-400 font-medium">
+        Cotton Studio Cloud Server v2.0 • Powered by Render & MongoDB Atlas
+    </footer>
+
+    <script>
+        let allCustomers = [];
+
+        // پیج لوڈ ہوتے ہی کسٹمرز کلاؤڈ سے لے کر آؤ
+        document.addEventListener("DOMContentLoaded", () => {
+            loadCustomers();
+        });
+
+        // فارم سبمٹ ہونے پر نیا کسٹمر کلاؤڈ پر بھیجو
+        document.getElementById('customer-form').addEventListener('submit', addCustomer);
+
+        // ٹینز (Tabs) تبدیل کرنے کا فنکشن
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabName}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('bg-indigo-800', 'text-white');
+                btn.classList.add('text-indigo-200', 'hover:bg-indigo-800', 'hover:text-white');
+            });
+
+            event.currentTarget.classList.add('bg-indigo-800', 'text-white');
+            event.currentTarget.classList.remove('text-indigo-200');
+        }
+
+        // 1. مونو جی ڈی بی کلاؤڈ سے کسٹمرز لوڈ کرنے کا فنکشن
+        async function loadCustomers() {
+            const tbody = document.getElementById('customer-list-body');
+            try {
+                const response = await fetch('/api/customers');
+                if (!response.ok) throw new Error('سرور سے ریسپانس ٹھیک نہیں آیا');
+                
+                allCustomers = await response.json();
+                renderCustomerTable(allCustomers);
+                updateDashboardStats(allCustomers);
+            } catch (error) {
+                console.error('Error loading customers:', error);
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-rose-500 font-semibold"><i class="fas fa-exclamation-triangle ml-2"></i>کلاؤڈ سرور سے کنکشن نہیں ہو سکا!</td></tr>`;
+            }
+        }
+
+        // کسٹمرز لسٹ کو اسکرین پر رینڈر کرنے کا فنکشن
+        function renderCustomerTable(data) {
+            const tbody = document.getElementById('customer-list-body');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-8 text-center text-gray-400">کوئی کسٹمر ریکارڈ نہیں ملا!</td></tr>`;
                 return;
             }
-            
-            customers.forEach(customer => {
-                listContainer.innerHTML += `
-                    <tr>
-                        <td class="fw-bold text-dark">${customer.name}</td>
-                        <td>${customer.phone || '-'}</td>
-                        <td>${customer.address || '-'}</td>
-                        <td class="text-danger fw-bold">${parseFloat(customer.balance).toLocaleString()}</td>
+
+            data.forEach(customer => {
+                const balance = parseFloat(customer.balance || 0);
+                tbody.innerHTML += `
+                    <tr class="hover:bg-gray-50/80 transition border-b border-gray-100">
+                        <td class="p-4 font-bold text-gray-900">${customer.name}</td>
+                        <td class="p-4 text-gray-600">${customer.phone || '<span class="text-gray-300">—</span>'}</td>
+                        <td class="p-4 text-gray-500">${customer.address || '<span class="text-gray-300">—</span>'}</td>
+                        <td class="p-4 font-bold ${balance > 0 ? 'text-emerald-600' : 'text-gray-700'}">Rs. ${balance.toLocaleString()}</td>
                     </tr>
                 `;
             });
-        } catch (error) {
-            console.error('Error loading customers:', error);
-            listContainer.innerHTML = `<tr><td colspan="4" class="text-center text-danger">سرور سے کسٹmerز لوڈ کرنے میں خرابی آئی ہے!</td></tr>`;
-        }
-    }
-
-    // 2. نیا کسٹمر کلاؤڈ پر ایڈ کرنے کا فنکشن
-    async function addCustomer(event) {
-        event.preventDefault();
-
-        const name = document.getElementById('customer-name').value.trim();
-        const phone = document.getElementById('customer-phone').value.trim();
-        const address = document.getElementById('customer-address').value.trim();
-        const balance = document.getElementById('customer-balance').value;
-
-        if (!name) {
-            alert('براہ کرم کسٹمر کا نام لازمی لکھیں!');
-            return;
         }
 
-        const customerData = { name, phone, address, balance };
+        // 2. نیا کسٹمر کلاؤڈ ڈیٹا بیس میں ایڈ کرنے کا فنکشن
+        async function addCustomer(event) {
+            event.preventDefault();
 
-        try {
-            const response = await fetch('/api/customers', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(customerData)
-            });
+            const name = document.getElementById('customer-name').value.trim();
+            const phone = document.getElementById('customer-phone').value.trim();
+            const address = document.getElementById('customer-address').value.trim();
+            const balance = document.getElementById('customer-balance').value;
 
-            if (response.ok) {
-                alert('🎉 کسٹمر کامیابی سے کلاؤڈ ڈیٹا بیس میں سیو ہو گیا ہے!');
-                document.getElementById('customer-form').reset(); // فارم خالی کریں
-                loadCustomers(); // لسٹ دوبارہ اپڈیٹ کریں
-            } else {
-                const errorData = await response.json();
-                alert('❌ خرابی: ' + errorData.message);
+            const customerData = { name, phone, address, balance };
+
+            try {
+                const response = await fetch('/api/customers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(customerData)
+                });
+
+                if (response.ok) {
+                    alert('🎉 کسٹمر کامیابی سے مونو جی ڈی بی کلاؤڈ پر محفوظ ہو گیا ہے!');
+                    document.getElementById('customer-form').reset();
+                    loadCustomers(); // کلاؤڈ سے لسٹ دوبارہ اپڈیٹ کریں
+                } else {
+                    const error = await response.json();
+                    alert('❌ خرابی: ' + error.message);
+                }
+            } catch (error) {
+                console.error('Error adding customer:', error);
+                alert('❌ نیٹ ورک یا سرور کا مسئلہ آرہا ہے!');
             }
-        } catch (error) {
-            console.error('Error adding customer:', error);
-            alert('❌ کسٹمر ایڈ کرنے میں کوئی تکنیکی مسئلہ ہوا ہے!');
         }
-    }
-</script>
 
+        // ڈیش بورڈ کی ٹوٹل کیلکولیشنز اپڈیٹ کرنے کا فنکشن
+        function updateDashboardStats(customers) {
+            document.getElementById('dash-total-customers').innerText = customers.length;
+            
+            let totalReceivable = 0;
+            customers.forEach(c => {
+                totalReceivable += parseFloat(c.balance || 0);
+            });
+            
+            document.getElementById('dash-cust-receivable').innerText = 'Rs. ' + totalReceivable.toLocaleString();
+        }
+
+        // لائیو سرچ فنکشن
+        function searchCustomer() {
+            const query = document.getElementById('customer-search').value.toLowerCase();
+            const filtered = allCustomers.filter(c => c.name.toLowerCase().includes(query));
+            renderCustomerTable(filtered);
+        }
+    </script>
 </body>
 </html>
