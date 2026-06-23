@@ -46,7 +46,7 @@ app.get('/api/customers', async (req, res) => {
     }
 });
 
-// 2. Add a new customer (Proper MongoDB Save)
+// 2. Add a new customer (Fixed Save Method)
 app.post('/api/customers', async (req, res) => {
     try {
         const { name, phone, address, balance } = req.body;
@@ -61,7 +61,7 @@ app.post('/api/customers', async (req, res) => {
             balance: balance ? parseFloat(balance) : 0
         });
 
-        const savedCustomer = await Customer.save();
+        const savedCustomer = await newCustomer.save(); // Fixed this line
         res.status(201).json(savedCustomer);
     } catch (error) {
         res.status(500).json({ message: 'Error adding customer', error: error.message });
