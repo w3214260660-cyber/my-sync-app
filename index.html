@@ -1,762 +1,172 @@
 <!DOCTYPE html>
-<html lang="ur">
+<html lang="ur" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cotton Studio - Cloud ERP</title>
+    <title>Cotton Studio - Customer Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2b3e50;
-            --secondary: #1abc9c;
-            --dark: #222;
-            --light: #f8f9fa;
-            --success: #27ae60;
-            --danger: #c0392b;
-            --warning: #f39c12;
-            --border: #ddd;
+        body {
+            background-color: #f4f6f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding-top: 30px;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        body { background: #eef2f5; color: var(--dark); display: flex; min-height: 100vh; }
-
-        /* 📱 Mobile Toggle & Sidebar Styling */
-        .mobile-header { display: none; background: var(--primary); color: white; padding: 15px; width: 100%; position: fixed; top: 0; left: 0; z-index: 1000; justify-content: space-between; align-items: center; }
-        .menu-btn { background: none; border: none; color: white; font-size: 24px; cursor: pointer; }
-
-        .sidebar { width: 260px; background: var(--primary); color: white; display: flex; flex-direction: column; transition: 0.3s; z-index: 999; }
-        .sidebar .brand { padding: 25px 20px; font-size: 22px; font-weight: bold; text-align: center; background: rgba(0,0,0,0.2); letter-spacing: 1px; }
-        .sidebar ul { list-style: none; padding: 15px 0; flex: 1; }
-        .sidebar ul li { padding: 14px 25px; cursor: pointer; display: flex; align-items: center; gap: 12px; font-size: 16px; transition: 0.2s; border-left: 4px solid transparent; }
-        .sidebar ul li:hover, .sidebar ul li.active { background: rgba(255,255,255,0.1); border-left-color: var(--secondary); color: var(--secondary); }
-
-        .main-content { flex: 1; padding: 30px; display: flex; flex-direction: column; gap: 25px; margin-top: 0; }
-
-        /* 📊 Dashboard Cards */
-        .top-bar { display: flex; justify-content: space-between; align-items: center; background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .dash-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 10px; border-top: 4px solid var(--secondary); }
-        .card.sales { border-top-color: var(--secondary); }
-        .card.profit { border-top-color: var(--success); }
-        .card.receivables { border-top-color: var(--warning); }
-        .card h3 { font-size: 14px; color: #777; text-transform: uppercase; }
-        .card .value { font-size: 28px; font-weight: bold; color: var(--primary); }
-
-        /* 📺 Layout & Screens */
-        .screen { display: none; flex-direction: column; gap: 25px; }
-        .screen.active { display: flex; }
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
-        .box { background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); display: flex; flex-direction: column; gap: 18px; }
-        .box h2 { font-size: 18px; color: var(--primary); border-bottom: 2px solid var(--light); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
-
-        /* 📋 Forms & Inputs */
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        label { font-size: 13px; font-weight: 600; color: #555; }
-        input, select, textarea { padding: 10px 14px; border: 1px solid var(--border); border-radius: 5px; font-size: 14px; outline: none; background: #fafafa; }
-        input:focus, select:focus { border-color: var(--secondary); background: white; }
-        
-        .btn { padding: 12px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; font-size: 14px; text-align: center; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #1a252f; }
-        .btn-success { background: var(--success); color: white; }
-        .btn-danger { background: var(--danger); color: white; }
-
-        /* 🧾 Tables */
-        table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
-        th, td { padding: 12px 15px; border-bottom: 1px solid var(--border); }
-        th { background: var(--light); color: #555; font-weight: 600; }
-        tr:hover { background: #fcfcfc; }
-        .badge { padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: bold; text-transform: uppercase; }
-        .badge.active { background: #e8f5e9; color: var(--success); }
-        .badge.inactive { background: #ffebee; color: var(--danger); }
-
-        /* 🖨️ Professional Print Engine */
-        #print-engine-output { display: none; }
-        @media print {
-            body * { display: none !important; }
-            #print-engine-output, #print-engine-output * { display: block !important; }
-            #print-engine-output { position: absolute; top: 0; left: 0; width: 100%; padding: 40px; background: white; color: black; }
-            .p-flex-row { display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 20px; }
-            .p-table { width: 100% !important; border-collapse: collapse !important; margin-top: 20px; }
-            .p-table th, .p-table td { border: 1px solid #000 !important; padding: 10px !important; text-align: left !important; }
+        .main-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
         }
-
-        /* Responsive Breakpoints */
-        @media (max-width: 992px) {
-            body { flex-direction: column; }
-            .mobile-header { display: flex; }
-            .sidebar { position: fixed; top: 55px; left: -260px; height: calc(100vh - 55px); width: 260px; }
-            .sidebar.open { left: 0; }
-            .main-content { padding: 20px; margin-top: 55px; }
-            .grid-2 { grid-template-columns: 1fr; }
+        .table-responsive {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
         }
     </style>
 </head>
 <body>
 
-    <div class="mobile-header">
-        <button class="menu-btn" onclick="toggleSidebar()">☰</button>
-        <div style="font-weight:bold; font-size:18px;">Cotton Studio Cloud</div>
-        <button class="menu-btn" onclick="triggerWhatsAppPluginAction()">💬</button>
-    </div>
-
-    <div class="sidebar" id="appSidebar">
-        <div class="brand">COTTON STUDIO</div>
-        <ul>
-            <li id="m-dash" class="active" onclick="switchScreen('dash')">📊 Dashboard</li>
-            <li id="m-billing" onclick="switchScreen('billing')">🧾 New Invoice</li>
-            <li id="m-ledger" onclick="switchScreen('ledger')">👥 Clients Ledger</li>
-            <li id="m-vendor" onclick="switchScreen('vendor')">🏭 Vendor Panel</li>
-            <li id="m-stitcher" onclick="switchScreen('stitcher')">🪡 Stitching (کاریگر)</li>
-            <li id="m-staff" onclick="switchScreen('staff')">👔 Staff Salaries</li>
-            <li id="m-expenses" onclick="switchScreen('expenses')">💸 Day Expenses</li>
-        </ul>
-        <div style="padding:20px; font-size:11px; text-align:center; color:#ccc; border-top:1px solid rgba(255,255,255,0.1);" id="backup-status">
-            ☁️ Cloud Server Active
+<div class="container">
+    <div class="row mb-4 text-center">
+        <div class="col">
+            <h2 class="fw-bold text-primary">Cotton Studio Cloud ERP</h2>
+            <p class="text-muted">کسٹمر مینجمنٹ سسٹم (MongoDB Cloud)</p>
         </div>
     </div>
 
-    <div class="main-content">
-        
-        <div id="dash-screen" class="screen active">
-            <div class="top-bar">
-                <h2>Business Overview</h2>
-                <button class="btn btn-primary" onclick="triggerManualRestore()">🔄 Sync Cloud</button>
-            </div>
-            <div class="dash-cards">
-                <div class="card sales"><h3>Total Sales</h3><div class="value" id="d-sales">Rs. 0</div></div>
-                <div class="card profit"><h3>Net Profit</h3><div class="value" id="d-profit">Rs. 0</div></div>
-                <div class="card receivables"><h3>Total Receivables</h3><div class="value" id="d-receivables">Rs. 0</div></div>
-            </div>
-            <div class="box">
-                <h2>📋 Daybook History logs</h2>
-                <table>
-                    <thead><tr><th>Date</th><th>Description</th><th>Payment Gateway</th><th>Amount Type</th></tr></thead>
-                    <tbody id="dash-logs-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="billing-screen" class="screen">
-            <div class="grid-2">
-                <div class="box">
-                    <h2>🎯 Customer Selection & Cart</h2>
-                    <div class="form-group">
-                        <label>Search Registered Clients</label>
-                        <input type="text" id="b-cust-search" placeholder="Type name to filter..." oninput="filterDropdown('billing')">
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card main-card p-4">
+                <h4 class="mb-3 text-secondary fw-bold">نیا کسٹمر ایڈ کریں</h4>
+                <form id="customer-form">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">کسٹمر کا نام *</label>
+                        <input type="text" id="customer-name" class="form-content form-control" required placeholder="نام لکھیں...">
                     </div>
-                    <div class="form-group">
-                        <select id="b-cust-select"><option value="">-- Match Target Customer --</option></select>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">فون نمبر</label>
+                        <input type="text" id="customer-phone" class="form-control" placeholder="03001234567">
                     </div>
-                    <hr style="border:1px solid var(--light)">
-                    <div class="form-group">
-                        <label>Select Suit / Fabric Item</label>
-                        <select id="b-prod-select" onchange="syncProdRate()"><option value="">-- Match Registered Stock --</option></select>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">ایڈریس / پتہ</label>
+                        <input type="text" id="customer-address" class="form-control" placeholder="شہر یا مارکیٹ کا نام...">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Manual Description (Optional)</label><input type="text" id="b-manual-name"></div>
-                        <div class="form-group"><label>Quantity</label><input type="number" id="b-qty" value="1"></div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">ابتدائی بیلنس (Rs.)</label>
+                        <input type="number" id="customer-balance" class="form-control" value="0" min="0">
                     </div>
-                    <div class="form-group"><label>Selling Rate (PKR)</label><input type="number" id="b-rate" value="0"></div>
-                    <button class="btn btn-primary" onclick="addItemToCart()">＋ Add Item to Cart</button>
-                </div>
-                <div class="box">
-                    <h2>🛒 Invoice Calculation & Checkout</h2>
-                    <div style="max-height:180px; overflow-y:auto; border:1px solid var(--border); border-radius:5px;">
-                        <table>
-                            <thead><tr><th>Item Description</th><th>Qty</th><th>Rate</th><th>Total</th></tr></thead>
-                            <tbody id="cart-table"></tbody>
-                        </table>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Gross Bill</label><input type="number" id="b-total-bill" readonly value="0"></div>
-                        <div class="form-group"><label>Flat Discount</label><input type="number" id="b-discount" value="0" oninput="calculateFinalBillMath()"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Cash Paid (Income)</label><input type="number" id="b-cash-received" value="0" oninput="calculateFinalBillMath()"></div>
-                        <div class="form-group"><label>Remaining Udhar (Balance)</label><input type="number" id="b-udhar-rem" readonly value="0" style="color:var(--danger); font-weight:bold;"></div>
-                    </div>
-                    <div class="form-group">
-                        <label>Payment Method Gateway</label>
-                        <select id="b-gateway"><option value="Cash">Cash Counter</option><option value="Bank">HBL / UBL Bank</option><option value="Meezan">MCB / Meezan</option></select>
-                    </div>
-                    <button class="btn btn-success" onclick="checkoutInvoice()">💾 Generate & Print Cloud Invoice</button>
-                </div>
-            </div>
-            <div class="box">
-                <h2>➕ Fast Add New Customer Profile</h2>
-                <div class="form-row">
-                    <div class="form-group"><label>Full Name</label><input type="text" id="b-cust-new"></div>
-                    <div class="form-group"><label>Phone Number</label><input type="text" id="b-phone-new" placeholder="923000000000"></div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group"><label>City / Address</label><input type="text" id="b-address-new"></div>
-                    <div class="form-group"><label>Status Account</label><select id="b-status-new"><option value="Active">Active Ledger</option><option value="Blocked">Suspended</option></select></div>
-                </div>
-                <button class="btn btn-primary" onclick="addCustQuick()">Save Customer Profile</button>
+                    <button type="submit" class="btn btn-primary w-100 fw-bold py-2">💾 کلاؤڈ پر سیو کریں</button>
+                </form>
             </div>
         </div>
 
-        <div id="ledger-screen" class="screen">
-            <div class="box">
-                <h2>🔍 Search Client Profile</h2>
-                <div class="form-row">
-                    <div class="form-group"><input type="text" id="l-cust-search" placeholder="Type client name..." oninput="filterDropdown('ledger')"></div>
-                    <div class="form-group"><select id="l-cust-select" onchange="loadCustomerLedger()"><option value="">-- Match Target Customer --</option></select></div>
+        <div class="col-md-8">
+            <div class="card main-card p-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4 class="text-secondary fw-bold m-0">تمام کسٹمرز کی لسٹ</h4>
+                    <button onclick="loadCustomers()" class="btn btn-outline-secondary btn-sm">🔄 لسٹ ریفریش کریں</button>
                 </div>
-            </div>
-            <div class="grid-2" id="customer-details-section" style="display:none;">
-                <div class="box">
-                    <h2>📋 Profile Status Card</h2>
-                    <p><b>Name:</b> <span id="det-name">-</span></p>
-                    <p><b>Phone:</b> <span id="det-phone">-</span></p>
-                    <p><b>Account Status:</b> <span id="det-status" class="badge active">Active</span></p>
-                    <p style="font-size:18px; color:var(--danger);"><b>Current Net Udhar Balance:</b> <span id="det-balance" style="font-weight:bold;">0</span></p>
-                    <div style="display: flex; gap: 10px;">
-                        <button class="btn" id="btn-wa-ledger" style="background-color:#25D366; color:white;">WhatsApp Ledger</button>
-                        <button class="btn" onclick="printGenericStatement('customer')" style="background-color:#7f8c8d; color:white;">Print Statement</button>
-                        <button class="btn btn-danger" onclick="deleteParty('customer')">🗑️ Delete Profile</button>
-                    </div>
-                </div>
-                <div class="box">
-                    <h2>💸 Post Cash Recovery Entry</h2>
-                    <div class="form-row">
-                        <div class="form-group"><label>Recovery Cash Amount</label><input type="number" id="l-amount"></div>
-                        <div class="form-group"><label>Description Note</label><input type="text" id="l-desc-3" placeholder="Recovery Entry"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Reference # / Slip</label><input type="text" id="l-ref-3"></div>
-                        <div class="form-group"><label>Update Status</label><select id="l-status-3"><option value="Active">Keep Active</option></select></div>
-                    </div>
-                    <button class="btn btn-success" onclick="submitRecovery()">Save Recovery Entry</button>
-                </div>
-            </div>
-            <div class="box">
-                <h2>📊 Client Account Statement Transactions Ledger</h2>
-                <table>
-                    <thead><tr><th>Date</th><th>Narration/Description</th><th>Method</th><th>Debit (Udhar)</th><th>Credit (Paid)</th><th>Running Balance</th></tr></thead>
-                    <tbody id="customer-ledger-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="vendor-screen" class="screen">
-            <div class="grid-2">
-                <div class="box">
-                    <h2>➕ Register New Mills/Vendor Profile</h2>
-                    <div class="form-row">
-                        <div class="form-group"><label>Vendor/Company Name</label><input type="text" id="v-name-new"></div>
-                        <div class="form-group"><label>Phone Number</label><input type="text" id="v-phone-new"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Factory Address</label><input type="text" id="v-address-new"></div>
-                        <div class="form-group"><label>Status</label><select id="v-status-new"><option value="Active">Active</option></select></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="addNewVendorProfile()">Save Vendor Registry</button>
-                </div>
-                <div class="box">
-                    <h2>🔍 Select Vendor Profile</h2>
-                    <div class="form-row">
-                        <div class="form-group"><input type="text" id="v-search" placeholder="Filter vendors..." oninput="filterDropdown('vendor')"></div>
-                        <div class="form-group"><select id="v-select" onchange="loadVendorLedgerDetails()"><option value="">-- Choose Vendor Profile --</option></select></div>
-                    </div>
-                    <div id="vendor-details-section" style="display:none; flex-direction:column; gap:12px; border-top:1px dashed #ccc; padding-top:15px;">
-                        <p><b>Name:</b> <span id="v-det-name">-</span> | <b>Phone:</b> <span id="v-det-phone">-</span></p>
-                        <p style="color:var(--danger); font-size:16px;"><b>Payable Balance:</b> <span id="v-det-balance" style="font-weight:bold;">Rs. 0</span></p>
-                        <div class="form-row">
-                            <div class="form-group"><label>Amount Paid</label><input type="number" id="v-pay-amount"></div>
-                            <div class="form-group"><label>Narration Note</label><input type="text" id="v-desc-3" placeholder="Cash Payment"></div>
-                        </div>
-                        <input type="hidden" id="v-status-select-active" value="Active">
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="submitVendorPayment()">Submit Payment</button>
-                            <button class="btn btn-danger" onclick="deleteParty('vendor')">🗑️ Delete Vendor</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="box">
-                <h2>📊 Mills Registry Ledger View</h2>
-                <table>
-                    <thead><tr><th>Vendor / Company Name</th><th>Status</th><th>Total Purchases</th><th>Total Paid</th><th>Net Balance Payable</th></tr></thead>
-                    <tbody id="vendor-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="stitcher-screen" class="screen">
-            <div class="grid-2">
-                <div class="box">
-                    <h2>➕ Add Master/Stitcher Profile</h2>
-                    <div class="form-row">
-                        <div class="form-group"><label>Stitcher Name</label><input type="text" id="stc-name-new"></div>
-                        <div class="form-group"><label>Phone Number</label><input type="text" id="stc-phone-new"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Fixed Suite Rate</label><input type="number" id="stc-rate-new"></div>
-                        <div class="form-group"><label>Status</label><select id="stc-status-new"><option value="Active">Active</option></select></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="addNewStitcherProfile()">Save Stitcher Profile</button>
-                </div>
-                <div class="box">
-                    <h2>🪡 Select Stitcher Workshop Profile</h2>
-                    <div class="form-group"><select id="stc-select" onchange="loadStitcherDetails()"><option value="">-- Select Stitcher --</option></select></div>
-                    <div id="stitcher-details-section" style="display:none; flex-direction:column; gap:12px; border-top:1px dashed #ccc; padding-top:15px;">
-                        <p><b>Name:</b> <span id="stc-det-name">-</span> | <b>Suite Stitching Rate:</b> <span id="stc-det-rate">-</span></p>
-                        <p><b>Status:</b> <span id="stc-det-status" class="badge active">Active</span></p>
-                        <p style="color:var(--danger); font-size:16px;"><b>Stitcher Balance Owed:</b> <span id="stc-det-balance" style="font-weight:bold;">0</span></p>
-                        <div class="form-row">
-                            <div class="form-group"><label>Suits Quantity</label><input type="number" id="stc-trans-qty" placeholder="0"></div>
-                            <div class="form-group"><label>Manual Amount Override</label><input type="number" id="stc-trans-amount" placeholder="0"></div>
-                        </div>
-                        <div class="form-row">
-                            <div class="form-group"><label>Transaction Nature Type</label><select id="stc-trans-type"><option value="work">Work Log (Suits Delivered)</option><option value="payment">Advance Cash / Payment Paid</option></select></div>
-                            <div class="form-group"><label>Description Note</label><input type="text" id="stc-desc" placeholder="Details..."></div>
-                        </div>
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="submitStitcherTransaction()">Submit Record</button>
-                            <button class="btn btn-danger" onclick="deleteParty('stitcher')">🗑️ Delete Stitcher</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="box">
-                <h2>📊 Tailoring Workshop Registry View</h2>
-                <table>
-                    <thead><tr><th>Stitcher Workshop Name</th><th>Status</th><th>Suite Unit Rate</th><th>Net Owed Balance</th></tr></thead>
-                    <tbody id="stitcher-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="staff-screen" class="screen">
-            <div class="grid-2">
-                <div class="box">
-                    <h2>➕ Hire/Register New Employee Staff</h2>
-                    <div class="form-row">
-                        <div class="form-group"><label>Employee Full Name</label><input type="text" id="stf-name-new"></div>
-                        <div class="form-group"><label>Base Monthly Salary</label><input type="number" id="stf-salary-new"></div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group"><label>Phone Number</label><input type="text" id="stf-phone-new"></div>
-                        <div class="form-group"><label>Status</label><select id="stf-status-new"><option value="Active">Active Employee</option></select></div>
-                    </div>
-                    <button class="btn btn-primary" onclick="addNewStaffProfile()">Register Employee</button>
-                </div>
-                <div class="box">
-                    <h2>🔍 Post Salary / Advance Advance Entry</h2>
-                    <div class="form-row">
-                        <div class="form-group"><input type="text" id="stf-search" placeholder="Search staff..." oninput="filterDropdown('staff')"></div>
-                        <div class="form-group"><select id="stf-select" onchange="syncStaffDetailsView()"><option value="">-- Select Employee --</option></select></div>
-                    </div>
-                    <div id="staff-details-view-box" style="display:none; flex-direction:column; gap:12px; border-top:1px dashed #ccc; padding-top:15px;">
-                        <p><b>Name:</b> <span id="stf-det-name">-</span> | <b>Monthly Base Salary:</b> <span id="stf-det-salary">-</span></p>
-                        <p><b>Job Status:</b> <span id="stf-det-status" class="badge active">Active</span></p>
-                        <p style="color:var(--danger)"><b>Advance Balance:</b> <span id="stf-det-adv">0</span></p>
-                        <div class="form-row">
-                            <div class="form-group"><label>Cash Amount Given</label><input type="number" id="stf-trans-amount"></div>
-                            <div class="form-group"><label>Transaction Nature Type</label><select id="stf-trans-type"><option value="salary">Monthly Full Salary Paid</option><option value="advance">Advance Cash Owed</option></select></div>
-                        </div>
-                        <div class="form-group"><label>Narration Details Note</label><input type="text" id="stf-desc-3" placeholder="Cash distributed"></div>
-                        <input type="hidden" id="stf-status-update" value="Active">
-                        <div style="display: flex; gap: 10px;">
-                            <button class="btn btn-success" onclick="postStaffTransaction()">Post Transaction</button>
-                            <button class="btn btn-danger" onclick="deleteParty('staff')">🗑️ Delete Employee</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="box">
-                <h2>📊 Payroll Employee Management Registry View</h2>
-                <table>
-                    <thead><tr><th>Employee Name</th><th>Status</th><th>Base Salary</th><th>Total Disbursed</th><th>Advance Balance Remaining</th></tr></thead>
-                    <tbody id="staff-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <div id="expenses-screen" class="screen">
-            <div class="box">
-                <h2>💸 Post Daily Shop Expense Voucher</h2>
-                <div class="form-row">
-                    <div class="form-group"><label>Expense Description / Reason</label><input type="text" id="exp-desc" placeholder="Tea, Electricity bill, Lunch etc."></div>
-                    <div class="form-group"><label>Cash Amount Spent</label><input type="number" id="exp-amount"></div>
-                </div>
-                <div class="form-group">
-                    <label>Payment Method Mode</label>
-                    <select id="exp-gateway"><option value="Cash">Cash Drawer</option><option value="Bank">Bank Account</option></select>
-                </div>
-                <button class="btn btn-danger" onclick="submitExpense()">Post Shop Expense Voucher</button>
-            </div>
-            <div class="box">
-                <h2>📊 Shop Expense Ledger Logs History</h2>
-                <table>
-                    <thead><tr><th>Date</th><th>Expense Narration Note Details</th><th>Gateway</th><th>Amount Spent Out</th></tr></thead>
-                    <tbody id="expenses-table"></tbody>
-                </table>
-            </div>
-        </div>
-
-    </div>
-
-    <div id="print-engine-output"></div>
-
-    <script>
-        // ☁️ کلاؤڈ اور لوکل آٹو ڈیٹیکشن انجن
-        const serverIp = window.location.hostname || "localhost";
-        const API = window.location.origin.includes('localhost') || window.location.hostname === "" 
-            ? `http://${serverIp}:5000/api` 
-            : `${window.location.origin}/api`;
-        
-        let cart = []; let globalProducts = []; let globalCustomers = []; let globalVendors = []; let globalStaff = []; let globalStitchers = []; let currentCartTotal = 0;
-
-        // 📱 موبائل سائیڈ بار ٹوگل
-        function toggleSidebar() {
-            const sidebar = document.getElementById('appSidebar');
-            sidebar.classList.toggle('open');
-        }
-
-        function switchScreen(scr) {
-            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-            document.querySelectorAll('.sidebar ul li').forEach(l => l.classList.remove('active'));
-            if(document.getElementById(`${scr}-screen`)) document.getElementById(`${scr}-screen`).classList.add('active');
-            document.getElementById(`m-${scr}`).classList.add('active');
-            document.getElementById('appSidebar').classList.remove('open');
-            loadScreenData(scr);
-        }
-
-        function filterDropdown(type) {
-            if (type === 'billing') {
-                const text = document.getElementById('b-cust-search').value.toLowerCase();
-                renderCustomerSelect('b-cust-select', globalCustomers.filter(c => c.name.toLowerCase().includes(text)));
-            }
-            if (type === 'ledger') {
-                const text = document.getElementById('l-cust-search').value.toLowerCase();
-                renderCustomerSelect('l-cust-select', globalCustomers.filter(c => c.name.toLowerCase().includes(text)));
-            }
-            if (type === 'vendor') {
-                const text = document.getElementById('v-search').value.toLowerCase();
-                const select = document.getElementById('v-select'); select.innerHTML = '<option value="">-- Choose Vendor Profile --</option>';
-                globalVendors.filter(v => v.name.toLowerCase().includes(text)).forEach(v => {
-                    select.innerHTML += `<option value="${v.id}">${v.name} (${v.status || 'Active'})</option>`;
-                });
-            }
-            if (type === 'staff') {
-                const text = document.getElementById('stf-search').value.toLowerCase();
-                const select = document.getElementById('stf-select'); select.innerHTML = '<option value="">-- Select Employee --</option>';
-                globalStaff.filter(s => s.name.toLowerCase().includes(text)).forEach(s => {
-                    select.innerHTML += `<option value="${s.id}">${s.name} (${s.status || 'Active'})</option>`;
-                });
-            }
-        }
-
-        function renderCustomerSelect(elemId, list) {
-            const select = document.getElementById(elemId);
-            select.innerHTML = '<option value="">-- Match Target Customer --</option>';
-            list.forEach(c => { select.innerHTML += `<option value="${c.id}">${c.name} (${c.status || 'Active'})</option>`; });
-        }
-
-        function executeAutoBackupSystem(stateData, typeKey) {
-            try {
-                localStorage.setItem(`cotton_backup_${typeKey}`, JSON.stringify(stateData));
-                document.getElementById('backup-status').innerText = "☁️ Auto Backup Synced";
-                setTimeout(() => { document.getElementById('backup-status').innerText = "☁️ Auto Backup Active"; }, 2000);
-            } catch (e) { console.error(e); }
-        }
-
-        function triggerManualRestore() {
-            alert("لوکل بیک اپ سے ڈیٹا ری اسٹور کر دیا گیا ہے!");
-            loadScreenData('dash');
-        }
-
-        // 🗑️ کلاؤڈ ڈیلیٹ پارٹی مینیجر (کسٹمر، وینڈر، کاریگر، اسٹاف)
-        async function deleteParty(type) {
-            let id = ""; let endpoint = ""; let name = "";
-            if (type === 'customer') { 
-                id = document.getElementById('l-cust-select').value; 
-                endpoint = "customers";
-                if(id) name = globalCustomers.find(c => c.id === id).name;
-            }
-            if (type === 'vendor') { 
-                id = document.getElementById('v-select').value; 
-                endpoint = "vendors"; 
-                if(id) name = globalVendors.find(v => v.id === id).name;
-            }
-            if (type === 'stitcher') { 
-                id = document.getElementById('stc-select').value; 
-                endpoint = "stitchers"; 
-                if(id) name = globalStitchers.find(s => s.id === id).name;
-            }
-            if (type === 'staff') { 
-                id = document.getElementById('stf-select').value; 
-                endpoint = "staff"; 
-                if(id) name = globalStaff.find(s => s.id === id).name;
-            }
-
-            if (!id) return alert("پہلے لسٹ میں سے نام سلیکٹ کریں!");
-
-            if (confirm(`کیا آپ واقعی "${name}" کا پورا ریکارڈ کلاؤڈ سے ہمیشہ کے لیے ڈیلیٹ کرنا چاہتے ہیں؟`)) {
-                try {
-                    const res = await fetch(`${API}/${endpoint}/${id}`, { method: 'DELETE' });
-                    const data = await res.json();
-                    if(data.success) {
-                        alert("✓ ریکارڈ کلاؤڈ سے ڈیلیٹ کر دیا گیا ہے!");
-                        loadScreenData(type === 'customer' ? 'ledger' : type);
-                    } else {
-                        alert("❌ ڈیلیٹ نہیں ہو سکا: " + data.message);
-                    }
-                } catch (error) {
-                    alert("❌ کلاؤڈ سرور کا مسئلہ ہے!");
-                }
-            }
-        }
-
-        function loadScreenData(scr) {
-            if(scr === 'dash') {
-                fetch(`${API}/dashboard`).then(res=>res.json()).then(data=>{
-                    document.getElementById('d-profit').innerText = 'Rs. ' + data.summary.netProfit.toLocaleString();
-                    document.getElementById('d-sales').innerText = 'Rs. ' + data.summary.totalSales.toLocaleString();
-                    document.getElementById('d-receivables').innerText = 'Rs. ' + data.summary.receivables.toLocaleString();
-                    const tbody = document.getElementById('dash-logs-table'); tbody.innerHTML = '';
-                    data.daybook.forEach(log => {
-                        tbody.innerHTML += `<tr><td>${log.date}</td><td>${log.narration}</td><td>${log.method}</td><td style="color:${log.type==='income'?'var(--success)':'var(--danger)'}; font-weight:600;">Rs. ${log.amount.toLocaleString()}</td></tr>`;
-                    });
-                    executeAutoBackupSystem(data, 'dash');
-                }).catch(e => console.log("Cloud server waiting..."));
-            }
-            if(scr === 'billing' || scr === 'ledger') {
-                fetch(`${API}/customers`).then(res=>res.json()).then(custs => { globalCustomers = custs; renderCustomerSelect('b-cust-select', custs); renderCustomerSelect('l-cust-select', custs); executeAutoBackupSystem(custs, 'customers');}).catch(e=>console.log(e));
-                fetch(`${API}/inventory`).then(res=>res.json()).then(prods => {
-                    globalProducts = prods;
-                    const pSelect = document.getElementById('b-prod-select'); pSelect.innerHTML = '<option value="">-- Match Registered Stock --</option>';
-                    prods.forEach(p => pSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`);
-                }).catch(e=>console.log(e));
-            }
-            if(scr === 'vendor') {
-                fetch(`${API}/vendors`).then(res=>res.json()).then(vdata => {
-                    globalVendors = vdata; filterDropdown('vendor'); executeAutoBackupSystem(vdata, 'vendors');
-                    const tbody = document.getElementById('vendor-table'); tbody.innerHTML = '';
-                    vdata.forEach(v => {
-                        tbody.innerHTML += `<tr><td style="font-weight:600;">${v.name}</td><td><span class="${(v.status || 'Active') === 'Active' ? 'badge active' : 'badge inactive'}">${v.status || 'Active'}</span></td><td>Rs. ${v.totalPurchases?.toLocaleString() || 0}</td><td>Rs. ${v.totalPaid?.toLocaleString() || 0}</td><td style="color:var(--danger); font-weight:700;">Rs. ${v.balance.toLocaleString()}</td></tr>`;
-                    });
-                }).catch(e=>console.log(e));
-            }
-            if(scr === 'stitcher') {
-                fetch(`${API}/stitchers`).then(res=>res.json()).then(sdata => {
-                    globalStitchers = sdata; executeAutoBackupSystem(sdata, 'stitchers');
-                    const select = document.getElementById('stc-select'); select.innerHTML = '<option value="">-- Select Stitcher --</option>';
-                    const tbody = document.getElementById('stitcher-table'); tbody.innerHTML = '';
-                    sdata.forEach(s => {
-                        select.innerHTML += `<option value="${s.id}">${s.name}</option>`;
-                        tbody.innerHTML += `<tr><td style="font-weight:600;">${s.name}</td><td><span class="${(s.status || 'Active') === 'Active' ? 'badge active' : 'badge inactive'}">${s.status || 'Active'}</span></td><td>Rs. ${s.rate}</td><td style="color:var(--danger); font-weight:700;">Rs. ${(s.balance || 0).toLocaleString()}</td></tr>`;
-                    });
-                }).catch(e=>console.log(e));
-            }
-            if(scr === 'staff') {
-                fetch(`${API}/staff`).then(res=>res.json()).then(sdata => {
-                    globalStaff = sdata; executeAutoBackupSystem(sdata, 'staff'); filterDropdown('staff');
-                    const tbody = document.getElementById('staff-table'); tbody.innerHTML = '';
-                    sdata.forEach(s => {
-                        tbody.innerHTML += `<tr><td style="font-weight:600;">${s.name}</td><td><span class="${(s.status || 'Active') === 'Active' ? 'badge active' : 'badge inactive'}">${s.status || 'Active'}</span></td><td>Rs. ${(s.salary || 0).toLocaleString()}</td><td>Rs. ${(s.totalPaid || 0).toLocaleString()}</td><td style="color:var(--danger)">Rs. ${(s.advanceBalance || 0).toLocaleString()}</td></tr>`;
-                    });
-                }).catch(e=>console.log(e));
-            }
-            if(scr === 'expenses') {
-                fetch(`${API}/expenses`).then(res=>res.json()).then(edata => {
-                    const tbody = document.getElementById('expenses-table'); tbody.innerHTML = '';
-                    edata.forEach(e => { tbody.innerHTML += `<tr><td>${e.date}</td><td>${e.narration}</td><td>${e.method}</td><td style="color:var(--danger); font-weight:600;">Rs. ${e.amount.toLocaleString()}</td></tr>`; });
-                }).catch(e=>console.log(e));
-            }
-        }
-
-        function addNewStitcherProfile() {
-            const name = document.getElementById('stc-name-new').value; const phone = document.getElementById('stc-phone-new').value;
-            const rate = document.getElementById('stc-rate-new').value; const status = document.getElementById('stc-status-new').value;
-            if(!name) return alert("Name required!");
-            fetch(`${API}/stitchers`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, rate, status }) }).then(() => {
-                loadScreenData('stitcher'); document.getElementById('stc-name-new').value = ''; document.getElementById('stc-phone-new').value = ''; document.getElementById('stc-rate-new').value = '';
-            });
-        }
-
-        function loadStitcherDetails() {
-            const id = document.getElementById('stc-select').value; if(!id) return;
-            const s = globalStitchers.find(st => st.id === id);
-            document.getElementById('stitcher-details-section').style.display = 'flex';
-            document.getElementById('stc-det-name').innerText = s.name; document.getElementById('stc-det-rate').innerText = "Rs. " + s.rate;
-            document.getElementById('stc-det-status').innerText = s.status || 'Active';
-            document.getElementById('stc-det-status').className = (s.status || 'Active') === 'Active' ? 'badge active' : 'badge inactive';
-            document.getElementById('stc-det-balance').innerText = "Rs. " + (s.balance || 0).toLocaleString();
-        }
-
-        function submitStitcherTransaction() {
-            const stitcherId = document.getElementById('stc-select').value; const qty = document.getElementById('stc-trans-qty').value || 0;
-            const amount = document.getElementById('stc-trans-amount').value || 0; const desc = document.getElementById('stc-desc').value;
-            const type = document.getElementById('stc-trans-type').value;
-            fetch(`${API}/stitchers/trans`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ stitcherId, qty, amount, desc, type }) }).then(()=>{
-                loadScreenData('stitcher'); document.getElementById('stc-trans-qty').value = ''; document.getElementById('stc-trans-amount').value = ''; document.getElementById('stc-desc').value = '';
-            });
-        }
-
-        function syncProdRate() {
-            const pId = document.getElementById('b-prod-select').value; const prod = globalProducts.find(p=>p.id===pId);
-            if(prod) { document.getElementById('b-rate').value = prod.sellingPrice; document.getElementById('b-manual-name').value = prod.name; }
-        }
-
-        function addItemToCart() {
-            const pId = document.getElementById('b-prod-select').value; const manualName = document.getElementById('b-manual-name').value;
-            const qty = parseInt(document.getElementById('b-qty').value) || 1; const rate = parseFloat(document.getElementById('b-rate').value) || 0;
-            const finalTitle = manualName || (pId ? globalProducts.find(p=>p.id===pId).name : "Manual Item");
-
-            cart.push({ productId: pId || null, name: finalTitle, qty, rate });
-            document.getElementById('cart-table').innerHTML += `<tr><td><b>${finalTitle}</b></td><td>${qty}</td><td>Rs. ${rate.toLocaleString()}</td><td>Rs. ${(qty*rate).toLocaleString()}</td></tr>`;
-            currentCartTotal += (qty * rate); document.getElementById('b-total-bill').value = currentCartTotal;
-            calculateFinalBillMath();
-            document.getElementById('b-manual-name').value = ''; document.getElementById('b-qty').value = '1'; document.getElementById('b-rate').value = '0';
-        }
-
-        function calculateFinalBillMath() {
-            const gross = currentCartTotal; const disc = parseFloat(document.getElementById('b-discount').value) || 0;
-            const cash = parseFloat(document.getElementById('b-cash-received').value) || 0;
-            const udhar = (gross - disc) - cash; document.getElementById('b-udhar-rem').value = udhar >= 0 ? udhar : 0;
-        }
-
-        function checkoutInvoice() {
-            const customerId = document.getElementById('b-cust-select').value; const method = document.getElementById('b-gateway').value;
-            const discount = parseFloat(document.getElementById('b-discount').value) || 0; const cashPaid = parseFloat(document.getElementById('b-cash-received').value) || 0;
-            const udharAmount = parseFloat(document.getElementById('b-udhar-rem').value) || 0;
-
-            if(!customerId || cart.length === 0) return alert("Fields Missing!");
-            const activeCust = globalCustomers.find(c => c.id === customerId);
-
-            fetch(`${API}/invoices/checkout`, { 
-                method: 'POST', headers: {'Content-Type':'application/json'}, 
-                body: JSON.stringify({ customerId, items: cart, paymentMethod: method, cashPaid, udharAmount, discount }) 
-            })
-            .then(res=>res.json()).then(data => {
-                let itemRowsHtml = '';
-                cart.forEach((c, idx) => { itemRowsHtml += `<tr><td>${idx+1}</td><td><b>${c.name}</b></td><td>${c.qty}</td><td>Rs. ${c.rate}</td><td>Rs. ${c.qty*c.rate}</td></tr>`; });
-
-                document.getElementById('print-engine-output').innerHTML = `
-                    <div class="p-flex-row">
-                        <div><h2>COTTON STUDIO</h2><p>Premium Men's Fabrics | Lahore</p></div>
-                        <div style="text-align:right;"><h2>SALES INVOICE</h2><p><b>INV-#${data.invoiceId || 'RDX'}</b></p></div>
-                    </div>
-                    <hr style="border:1px solid #000; margin-bottom:15px;">
-                    <p><b>Client:</b> ${activeCust.name}</p>
-                    <table class="p-table">
-                        <thead><tr><th>#</th><th>Description</th><th>Qty</th><th>Rate</th><th>Subtotal</th></tr></thead>
-                        <tbody>${itemRowsHtml}</tbody>
+                
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>نام</th>
+                                <th>فون نمبر</th>
+                                <th>ایڈریس</th>
+                                <th>بیلنس (Rs.)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customer-list">
+                            <tr>
+                                <td colspan="4" class="text-center text-muted">کسٹمرز لوڈ ہو رہے ہیں...</td>
+                            </tr>
+                        </tbody>
                     </table>
-                    <div style="float:right; width:320px; text-align:right; font-size:14px;">
-                        <p>Gross Bill: <b>Rs. ${currentCartTotal}</b></p><p>Discount Given: <b>Rs. ${discount}</b></p><p>Cash Received: <b>Rs. ${cashPaid}</b></p><hr><p style="font-size:16px;"><b>Net Udhar: Rs. ${udharAmount}</b></p>
-                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // پیج لوڈ ہوتے ہی کسٹمرز کلاؤڈ سے لے کر آؤ
+    document.addEventListener("DOMContentLoaded", loadCustomers);
+    
+    // فارم سبمٹ ہونے پر کسٹمر ایڈ کرو
+    document.getElementById('customer-form').addEventListener('submit', addCustomer);
+
+    // 1. کلاؤڈ ڈیٹا بیس سے کسٹمرز لوڈ کرنے کا فنکشن
+    async function loadCustomers() {
+        const listContainer = document.getElementById('customer-list');
+        
+        try {
+            const response = await fetch('/api/customers');
+            if (!response.ok) throw new Error('Network response was not ok');
+            
+            const customers = await response.json();
+            listContainer.innerHTML = ''; 
+
+            if(customers.length === 0) {
+                listContainer.innerHTML = `<tr><td colspan="4" class="text-center text-muted">کوئی کسٹمر موجود نہیں ہے!</td></tr>`;
+                return;
+            }
+            
+            customers.forEach(customer => {
+                listContainer.innerHTML += `
+                    <tr>
+                        <td class="fw-bold text-dark">${customer.name}</td>
+                        <td>${customer.phone || '-'}</td>
+                        <td>${customer.address || '-'}</td>
+                        <td class="text-danger fw-bold">${parseFloat(customer.balance).toLocaleString()}</td>
+                    </tr>
                 `;
-
-                window.print(); cart = []; currentCartTotal = 0; document.getElementById('cart-table').innerHTML = '';
             });
+        } catch (error) {
+            console.error('Error loading customers:', error);
+            listContainer.innerHTML = `<tr><td colspan="4" class="text-center text-danger">سرور سے کسٹmerز لوڈ کرنے میں خرابی آئی ہے!</td></tr>`;
+        }
+    }
+
+    // 2. نیا کسٹمر کلاؤڈ پر ایڈ کرنے کا فنکشن
+    async function addCustomer(event) {
+        event.preventDefault();
+
+        const name = document.getElementById('customer-name').value.trim();
+        const phone = document.getElementById('customer-phone').value.trim();
+        const address = document.getElementById('customer-address').value.trim();
+        const balance = document.getElementById('customer-balance').value;
+
+        if (!name) {
+            alert('براہ کرم کسٹمر کا نام لازمی لکھیں!');
+            return;
         }
 
-        function addCustQuick() {
-            const name = document.getElementById('b-cust-new').value; const phone = document.getElementById('b-phone-new').value;
-            const address = document.getElementById('b-address-new').value; const status = document.getElementById('b-status-new').value;
-            fetch(`${API}/customers`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, address, status }) }).then(() => {
-                loadScreenData('billing'); document.getElementById('b-cust-new').value = ''; document.getElementById('b-phone-new').value = ''; document.getElementById('b-address-new').value = '';
+        const customerData = { name, phone, address, balance };
+
+        try {
+            const response = await fetch('/api/customers', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(customerData)
             });
-        }
 
-        function loadCustomerLedger() {
-            const id = document.getElementById('l-cust-select').value; if(!id) return; const c = globalCustomers.find(cust=>cust.id === id);
-            document.getElementById('customer-details-section').style.display = 'grid';
-            document.getElementById('det-name').innerText = c.name; document.getElementById('det-phone').innerText = c.phone || 'N/A';
-            document.getElementById('det-status').innerText = c.status || 'Active';
-            document.getElementById('det-status').className = (c.status || 'Active') === 'Active' ? 'badge active' : 'badge inactive';
-            document.getElementById('det-balance').innerText = "Rs. " + c.balance.toLocaleString();
-
-            const tbody = document.getElementById('customer-ledger-table'); tbody.innerHTML = '';
-            (c.transactions || []).forEach(t => { tbody.innerHTML += `<tr><td>${t.date}</td><td>${t.description}</td><td>${t.method}</td><td style="color:var(--danger)">Rs. ${t.debit}</td><td style="color:var(--success)">Rs. ${t.credit}</td><td>Rs. ${t.balance}</td></tr>`; });
-
-            if(c.phone) {
-                const cleanPhone = c.phone.replace(/[^0-9]/g, ''); document.getElementById('btn-wa-ledger').style.display = 'inline-block';
-                document.getElementById('btn-wa-ledger').onclick = () => window.open(`https://api.whatsapp.com/send?phone=${cleanPhone}&text=*COTTON STUDIO*%0AAccount: ${c.name}%0ABalance: Rs. ${c.balance}`, '_blank');
+            if (response.ok) {
+                alert('🎉 کسٹمر کامیابی سے کلاؤڈ ڈیٹا بیس میں سیو ہو گیا ہے!');
+                document.getElementById('customer-form').reset(); // فارم خالی کریں
+                loadCustomers(); // لسٹ دوبارہ اپڈیٹ کریں
+            } else {
+                const errorData = await response.json();
+                alert('❌ خرابی: ' + errorData.message);
             }
+        } catch (error) {
+            console.error('Error adding customer:', error);
+            alert('❌ کسٹمر ایڈ کرنے میں کوئی تکنیکی مسئلہ ہوا ہے!');
         }
+    }
+</script>
 
-        function submitRecovery() {
-            const customerId = document.getElementById('l-cust-select').value; const amount = document.getElementById('l-amount').value;
-            const method = document.getElementById('b-gateway').value; const desc = document.getElementById('l-desc-3').value;
-            fetch(`${API}/customers/recovery`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ customerId, amount, method, desc }) }).then(() => {
-                loadScreenData('ledger'); document.getElementById('l-amount').value = ''; document.getElementById('l-desc-3').value = '';
-            });
-        }
-
-        function addNewVendorProfile() {
-            const name = document.getElementById('v-name-new').value; const phone = document.getElementById('v-phone-new').value;
-            const address = document.getElementById('v-address-new').value; const status = document.getElementById('v-status-new').value;
-            fetch(`${API}/vendors`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, phone, address, status }) }).then(() => {
-                loadScreenData('vendor'); document.getElementById('v-name-new').value = ''; document.getElementById('v-phone-new').value = ''; document.getElementById('v-address-new').value = '';
-            });
-        }
-
-        function loadVendorLedgerDetails() {
-            const id = document.getElementById('v-select').value; if(!id) return; const v = globalVendors.find(vend => vend.id === id);
-            document.getElementById('vendor-details-section').style.display = 'flex';
-            document.getElementById('v-det-name').innerText = v.name; document.getElementById('v-det-phone').innerText = v.phone || 'N/A';
-            document.getElementById('v-det-balance').innerText = "Rs. " + v.balance.toLocaleString();
-        }
-
-        function submitVendorPayment() {
-            const vendorId = document.getElementById('v-select').value; const amount = document.getElementById('v-pay-amount').value;
-            const desc = document.getElementById('v-desc-3').value;
-            fetch(`${API}/vendors/pay`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ vendorId, amount, desc }) }).then(() => {
-                loadScreenData('vendor'); document.getElementById('v-pay-amount').value = ''; document.getElementById('v-desc-3').value = '';
-            });
-        }
-
-        function addNewStaffProfile() {
-            const name = document.getElementById('stf-name-new').value; const salary = document.getElementById('stf-salary-new').value;
-            const phone = document.getElementById('stf-phone-new').value; const status = document.getElementById('stf-status-new').value;
-            fetch(`${API}/staff`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ name, salary, phone, status }) }).then(() => {
-                loadScreenData('staff'); document.getElementById('stf-name-new').value = ''; document.getElementById('stf-salary-new').value = ''; document.getElementById('stf-phone-new').value = '';
-            });
-        }
-
-        function syncStaffDetailsView() {
-            const id = document.getElementById('stf-select').value; if(!id) return; const s = globalStaff.find(st => st.id === id);
-            document.getElementById('staff-details-view-box').style.display = 'flex';
-            document.getElementById('stf-det-name').innerText = s.name; document.getElementById('stf-det-salary').innerText = "Rs. " + s.salary;
-            document.getElementById('stf-det-status').innerText = s.status || 'Active';
-            document.getElementById('stf-det-status').className = (s.status || 'Active') === 'Active' ? 'badge active' : 'badge inactive';
-            document.getElementById('stf-det-adv').innerText = "Rs. " + (s.advanceBalance || 0);
-        }
-
-        function postStaffTransaction() {
-            const staffId = document.getElementById('stf-select').value; const amount = document.getElementById('stf-trans-amount').value;
-            const type = document.getElementById('stf-trans-type').value; const desc = document.getElementById('stf-desc-3').value;
-            fetch(`${API}/staff/trans`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ staffId, amount, type, desc }) }).then(() => {
-                loadScreenData('staff'); document.getElementById('stf-trans-amount').value = ''; document.getElementById('stf-desc-3').value = '';
-            });
-        }
-
-        function submitExpense() {
-            const description = document.getElementById('exp-desc').value; const amount = document.getElementById('exp-amount').value;
-            const method = document.getElementById('exp-gateway').value;
-            fetch(`${API}/expenses`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ description, amount, method }) }).then(() => {
-                loadScreenData('expenses'); document.getElementById('exp-desc').value = ''; document.getElementById('exp-amount').value = '';
-            });
-        }
-
-        function printGenericStatement(type) {
-            const printContainer = document.getElementById('print-engine-output'); let rowsHtml = ''; let title = ''; let info = '';
-            if(type === 'customer') {
-                const id = document.getElementById('l-cust-select').value; if(!id) return; const c = globalCustomers.find(cust=>cust.id === id);
-                title = "CUSTOMER STATEMENT"; info = `<p><b>Client:</b> ${c.name}</p><p><b>Dues: Rs. ${c.balance}</b></p>`;
-                (c.transactions || []).forEach(t => { rowsHtml += `<tr><td>${t.date}</td><td>${t.description}</td><td>Rs. ${t.debit}</td><td>Rs. ${t.credit}</td><td>Rs. ${t.balance}</td></tr>`; });
-            }
-            printContainer.innerHTML = `<h2>COTTON STUDIO</h2><hr><br><h3>${title}</h3>${info}<table class="p-table"><thead><tr><th>Date</th><th>Description</th><th>Debit</th><th>Credit</th><th>Balance</th></tr></thead><tbody>${rowsHtml}</tbody></table>`;
-            window.print();
-        }
-
-        window.onload = () => loadScreenData('dash');
-    </script>
 </body>
 </html>
