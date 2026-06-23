@@ -1,0 +1,163 @@
+{
+  "inventory": [
+    {
+      "id": "1",
+      "name": "Premium Cotton Fabric",
+      "purchasePrice": 800,
+      "sellingPrice": 1200,
+      "quantity": 139
+    }
+  ],
+  "customers": [
+    {
+      "id": "1",
+      "name": "Walk-in Customer",
+      "balance": 0,
+      "transactions": [
+        {
+          "date": "23/06/2026",
+          "description": "سیلز بل (وصول شدہ)",
+          "method": "Cash",
+          "debit": 1200,
+          "credit": 1200,
+          "balance": 0
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "name": "Waqas Collection",
+      "balance": 0,
+      "transactions": [
+        {
+          "date": "2026-06-23",
+          "description": "Opening Balance",
+          "method": "System",
+          "debit": 15000,
+          "credit": 0,
+          "balance": 15000
+        },
+        {
+          "date": "23/06/2026",
+          "description": "سیلز بل (وصول شدہ)",
+          "method": "Cash",
+          "debit": 1200,
+          "credit": 1200,
+          "balance": 15000
+        },
+        {
+          "date": "23/06/2026",
+          "description": "رقم موصول ہوئی (Recovery)",
+          "method": "Meezan Bank",
+          "debit": 0,
+          "credit": 15000,
+          "balance": 0
+        },
+        {
+          "date": "23/06/2026",
+          "description": "سیلز بل (وصول شدہ)",
+          "method": "Meezan Bank",
+          "debit": 9600,
+          "credit": 9600,
+          "balance": 0
+        },
+        {
+          "date": "23/06/2026",
+          "description": "سیلز بل (وصول شدہ)",
+          "method": "Cash",
+          "debit": 1200,
+          "credit": 1200,
+          "balance": 0
+        }
+      ]
+    },
+    {
+      "id": "1782164403422",
+      "name": "mzs",
+      "balance": 0,
+      "transactions": []
+    },
+    {
+      "id": "1782164405934",
+      "name": "mzs",
+      "balance": 0,
+      "transactions": []
+    },
+    {
+      "id": "1782164406703",
+      "name": "mzs",
+      "balance": 0,
+      "transactions": []
+    },
+    {
+      "id": "1782164406923",
+      "name": "mzs",
+      "balance": 0,
+      "transactions": []
+    }
+  ],
+  "vendors": [
+    {
+      "id": "1",
+      "name": "Guangzhou Textile Mills",
+      "balance": 45000,
+      "transactions": [
+        {
+          "date": "2026-06-23",
+          "description": "Yarn Procurement",
+          "credit": 45000,
+          "debit": 0,
+          "balance": 45000
+        }
+      ]
+    }
+  ],
+  "banks": {
+    "Cash": 53600,
+    "Meezan Bank": 124600,
+    "Bank Alfalah": 0,
+    "JazzCash": 0
+  },
+  "daybook": [
+    {
+      "date": "23/06/2026",
+      "narration": "Invoice Sale to Walk-in Customer",
+      "method": "Cash",
+      "amount": 1200,
+      "cogs": 800,
+      "type": "income"
+    },
+    {
+      "date": "23/06/2026",
+      "narration": "Invoice Sale to Waqas Collection",
+      "method": "Cash",
+      "amount": 1200,
+      "cogs": 800,
+      "type": "income"
+    },
+    {
+      "date": "23/06/2026",
+      "narration": "Invoice Sale to Waqas Collection",
+      "method": "Meezan Bank",
+      "amount": 9600,
+      "cogs": 6400,
+      "type": "income"
+    },
+    {
+      "date": "23/06/2026",
+      "narration": "Recovery from Waqas Collection",
+      "method": "Meezan Bank",
+      "amount": 15000,
+      "type": "income"
+    },
+    {
+      "date": "23/06/2026",
+      "narration": "Invoice Sale to Waqas Collection",
+      "method": "Cash",
+      "amount": 1200,
+      "cogs": 800,
+      "type": "income"
+    }
+  ],
+  "expenses": []
+}
